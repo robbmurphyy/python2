@@ -1,77 +1,61 @@
 #Author: Robert Murphy
 #Class: Python 307
-#Assignment project 1, psutil
-#date 2/3/22
+#Assignment project 3 psutil
+#date 2/11/22
 
 import psutil
-import sys
-import getopt
-import platform
-import subprocess
-import os
-import signal
-import time
+from psutil._common import bytes2human
+
 
 #----------------------------------------------
+def showDisk():
+    try:
+        for parts in psutil.disk_partitions(all):
+            usage = psutil.disk_usage(parts.mountpoint)
+            print("Partition:", parts.device)
+            print("Total space in GB:", bytes2human(usage.total))
+            print("Free space in GB:", bytes2human(usage.free))
+            print("Total space used in GB:", bytes2human(usage.used))
+            print("Percent used:", usage.percent)
+            print("---------------------------------------------")
+            #print(parts.mountpoint)
 
-def whatOS(): #tells you what os you are using
-    if psutil.LINUX == True:
-        print("Your current operating system is Linux.")
-        print("Properties:", platform.uname())
-    elif psutil.WINDOWS == True:
-        print("Your current operating system is Windows.")
-        print("Properties:", platform.uname())
-    elif psutil.MACOS == True:
-        print("Your current operating system is Linux.")
-        print("Properties:", platform.uname())
+    except OSError:
+        print("Issue with the path")
 
-def getUsers(): #displays all users
-    users = psutil.users()
-    for user in users:
-        print(user.name, "\n", "\tHostname:", user.host, "\n", "\tCreation (seconds since epoch):", user.started)
-        if psutil.LINUX == True:
-            print("\n\tTerminal:", user.terminal, "\n", "\tPID of login process:", user.pid)
+def showMemory():
+    print("Here is information about your system's memory usage.")
+    mem = psutil.virtual_memory()
+    print("Total memory:", bytes2human(mem.total))
+    #print("Available memory:", bytes2human(mem.available))
+    print("Used memory:", bytes2human(mem.used))
+    print("Free memory:", bytes2human(mem.free))
+    print("--------------------------------")
 
-def getProcesses(): #displays 10 running processes
-    counter = 0
-    print("Here are 10 processes running on the system")
-    for proc in psutil.process_iter(['pid', 'name', 'username']):
-        print(proc.info)
-        counter += 1
-        if counter == 10:
-            break
-
-def pythonHunter(): #creates python instance, finds its pid, and kills it
-    process1 = subprocess.Popen(["python3"]).pid
-    print("Hunting for python process")
-    time.sleep(2)
-    for proc in psutil.process_iter(['name', 'pid']):
-        if process1 == proc.info['pid']:
-            print("\nfound python at PID", {proc.info['pid']}, "\nprepare to die...")
-            os.kill(int(proc.info['pid']), signal.SIGTERM)
-            time.sleep(2)
-            print("bye python :)")
-            break
+def newPartition():
 
 
-#-----------------------------------------------
-argList = sys.argv[1:]
-options = "wuph"
-longOptions = ["os", "users", "processes", "hunter"]
-try:
-    arguments, values = getopt.getopt(argList, options, longOptions)
+#--------------------------------------------
 
-    for currentArg, currentVal in arguments:
-        if currentArg in ("-w", "--os"):
-            whatOS()
-        elif currentArg in ("-u", "--users"):
-            getUsers()
-        elif currentArg in ("-p", "--processes"):
-            getProcesses()
-        elif currentArg in ("-h", "--hunter"):
-            pythonHunter()
-except getopt.error as err:
-    print("Wrong args. Enter -w or --os for whatOS() #4")
-    print("-u or --users for getUsers() #5")
-    print("-p or --processes for getProcesses() #6")
-    print("-h or --hunter for pythonHunter) #7 & 8")
+if __name__ == '__main__':
+    print("\n!!!This program is meant to run on Windows 10!!!\n")
+
+    print("Please enter the number that corresponds with what you want to do:")
+    choice = input("1:\tDisplay all disks and current usage\n2:\tDisplay all memory statistics\n3:\tCreate a new partition, mount it, and then delete it\n")
+
+    try:
+        user_choice = int(choice) # handle this error
+        if user_choice != 1 and user_choice != 2 and user_choice != 3:
+            user_choice = int(input("You did not enter 1,2, or 3. Please enter one of them."))
+
+        if user_choice == 1:
+            showDisk()
+        elif user_choice == 2:
+            showMemory()
+        # elif user_choice == 3:
+        #     newPartition()
+
+    except ValueError:
+        print("Only enter a number for your choice of method")
+
+
