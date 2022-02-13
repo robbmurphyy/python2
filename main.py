@@ -48,9 +48,6 @@ def create_new_partition_and_delete_it():
     print("p.communication(input=b'SELECT PARTITION 5')")
     print("p.communicate(input=b'DELETE PARTITION')")
     print("p.communicate(input=b'LIST PARTITION')")
-    #https://www.techtarget.com/searchwindowsserver/tip/Using-Diskpart-to-create-extend-or-delete-a-disk-partition
-    #https://computingforgeeks.com/how-to-create-disk-partitions-in-windows-using-diskpart-command/
-
 
 if __name__ == '__main__':
     print("\n!!!This program is meant to run on Windows 10!!!\n")
