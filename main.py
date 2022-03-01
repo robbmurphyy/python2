@@ -1,49 +1,25 @@
 #Author: Robert Murphy
 #Class: Python 307
-#Assignment 4 socket
-#date 2/18/22
+#Assignment 5 sniffer
+#date 2/25/22
 
-import socket
-from datetime import datetime
+from scapy.all import *
 
-#This function determines what the host will be to scan
-def host_to_scan():
-    user_ip = input("To enter a specific IP enter 'Y', otherwise enter anything else and it will scan localhost by default: ")
-    ip = ""
-    if user_ip.upper() == 'Y':
-        ip = input("Please enter the IP address you want to scan: ")
-        print(ip, "will be scanned")
-    else:
-        print("The localhost 127.0.0.1 will be scanned")
-        ip = "localhost"
-    return ip
+#This method performs the sniffing and prints out each packet captured
+def sniffer(num):
+    cap = sniff(filter='ip', prn=lambda x:x.sprintf("Time: %IP.time%, HostIP: %IP.src%, DestIP: %IP.dst%, Protocol: %IP.proto%, Data: %Raw.load%"), count=num)
+    print(cap)
 
-#Creates a socket and connects to the specified ip then scans 65535 ports to see what's open
-def port_scanner():
-    ip = host_to_scan()
-    print("Starting scan at", str(datetime.now()), "...might take a while")
-    try:
-        for i in range(1, 65535):
-            my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            connection = my_socket.connect_ex((ip,i))
-            if connection == 0:
-                print("Port", i, "is open")
-            my_socket.close()
-    except socket.timeout:
-        print("connection timed out")
-    except socket.gaierror:
-        print("host could not be resolved")
-    except socket.error:
-        print("The server isn't responding")
-    except KeyboardInterrupt:
-        print("Keyboard interrupt!")
-
+#runs the program and prompts user for desired number of captures
 if __name__ == '__main__':
-    port_scanner()
-
-
-
-
+    try:
+        print("Welcome to network sniffer")
+        number_of_captures = int(input("Enter number of packets you want to capture or type a letter for a default of 10: "))
+        sniffer(number_of_captures)
+    except ValueError:
+        number_of_captures = 10
+        print("Doing 10 captures")
+        sniffer(number_of_captures)
 
 
 
