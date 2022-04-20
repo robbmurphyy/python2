@@ -1,35 +1,24 @@
 #Author: Robert Murphy
 #Class: Python 307
-#Assignment 6 webscraping
-#date 4/7/22
+#Assignment 7 webscraping
+#date 4/20/22
 
-from selenium import webdriver
+import bs4
+import requests
+import re
+import os
 
-#returns a new url that is acceptable by selenium
-def create_url(site_to_visit):
-    domain = "https://" + site_to_visit
-    print("Opening: ", domain)
-    return domain
+res = requests.get("https://www.blackhat.com/html/bh-media-archives/bh-archives-2000.html")
+res.raise_for_status()
+blackhat = bs4.BeautifulSoup(res.text, 'html.parser')
+pres = blackhat.select('b')
+pres2 = str(pres)
+list_of_presenters = re.findall(r'(?m)^.*\">(.*)<', pres2)
+list_of_presenters2 = str(list_of_presenters)
+#list_of_presenters3 = re.findall(r'(.*)[</a>]|[</a>\\xa0]|[</a></b>]', list_of_presenters2)
+print(list_of_presenters2)
+os.system('cmd /c "echo" main.list_of_majors')
 
-#Asks the user for a site to visit
-def ask_for_domain():
-    site_to_visit = input("Enter a URL to visit in this format: www.<domain>.com\n")
-    if "www." in site_to_visit and ".com" in site_to_visit: #check to see if www. and .com were entered
-        new_url = create_url(site_to_visit)
-        return new_url
-    else:
-        print("improper formatting of URL")
-        return 1
 
-#uses selenium to go to user's url
-def visit_site(url):
-    firefox = webdriver.Firefox()
-    firefox.get(url)
 
-if __name__ == "__main__":
-    print("Requires geckodriver.exe to be in PATH")
-    url = ask_for_domain()
-    if url == 1:
-        print("exiting")
-    else:
-        visit_site(url)
+
